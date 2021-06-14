@@ -1,3 +1,7 @@
+# Silver Peak Course: Deploying SDWAN Technologies - DST  
+
+![Logo](/img/logo.png)
+
 # Business Intent Overlays
 Two types of tunnels to route the data:
 1. **Underlays**: Using the physical connection. One tunnel per connection.
@@ -203,3 +207,37 @@ Allow WAN-side devices to connect inbound to LAN-side.
   - Approve the appliances in Orchestrator.
 
 
+## Interface Labels
+
+* Two Types: LAN and WAN labels. 
+  * LAN labels: Tagging -> alows to send traffic to a particular BIO.
+  * WAN labels: Identify the newtork service the WAN interface will connect to. 
+* Labels are completely arbitrary. 
+  * Arbitrary 
+  * Create as much as you need. 
+* Default labels are cerated for you. 
+
+## Deployment Profiles
+* A template: appliance configuration
+  * Interface Labels
+  * FW settings/interface
+  * WAN Link speeds & Max WAN BW
+  * VLAN numbers
+  * NAT flag 
+  * Stateful & ZBF (Zone Based Firewall)
+
+* **Does not include IP addresses**
+* Multiple deployment profiles
+
+## Using Templates
+Useful tools for configuring appliance in more automated process. 
+* Simplifies and automates the application of new/updated configuration.
+* Saves Time
+* Guarantees consistency
+* Reduces Risk
+  
+### Common Terms
+* **Template**: A group of configuration settings that control the behavior of a feature or set of features. 
+* **Template Group:** A collection of templates used to configure settings on one or more appliances. 
+
+**Note**: Replace or Merge as options whenever you update the configuration. 
