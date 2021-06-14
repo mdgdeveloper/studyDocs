@@ -1,10 +1,3 @@
-
-# Index of Contents
-1. [Business Intent Overlays (BIO)](#business-intent-overlays)
-2. [Silver Peak Network Elements](#silver-peak-network-elements)
-3. [Silver Peak Deployment](#deployment)
-
-
 # Business Intent Overlays
 Two types of tunnels to route the data:
 1. **Underlays**: Using the physical connection. One tunnel per connection.
