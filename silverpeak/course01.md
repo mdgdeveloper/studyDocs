@@ -241,3 +241,162 @@ Useful tools for configuring appliance in more automated process.
 * **Template Group:** A collection of templates used to configure settings on one or more appliances. 
 
 **Note**: Replace or Merge as options whenever you update the configuration. 
+
+## Business Intent Overlays 
+Row for each overlay.
+
+Overlay Configuration Options:
+![Overlay Configuration](img/SilverPeak_Overlays_Summary.png)
+
+### SD-WAN Traffic to Internal Subnets
+* Subnets
+* Interfaces
+* Regions
+* FW Zones
+* Boost
+* QoS
+
+### Breakout traffic to Internet & Cloud Services
+For traffic not being sent over the SD-WAN fabric. 
+
+## Traffic Access Policy 
+Determining which traffic is sent to which BIO 
+1. Overlay ACLs
+2. **Appliance ACLs:** map different types of traffic to different overlay networks.
+3. **LAN port labels** map all traffic on matching ports to an overlay network. There must be a local LAN interface/subinterface with a matching label. 
+
+! **One Label or one ACL per overlay.**
+
+## Wildcards in ACLs
+* Three different wildcards supported
+  * '|' Pipe ▶ OR
+  * '*' Asterisk ▶ Any
+  * '-' Dash ▶ Range
+
+## Topology and Regions
+### Topology
+* Each BIO has topology type:
+  * Mesh: Tunnel between devices
+  * Hub & Spoke: Tunnel between hub and spokes.
+  * Regional Mesh
+  * Regional Hub & Spoke
+
+### Hubs
+* Connect to spokes and each other
+* Advertise routes to spokes and each other
+* Hub in all overlays
+
+### Regions
+* Connect groups of appliances via one or more hubs.
+* Reduces the overall number of tunnels needed.
+* Spokes: connect through hubs in their local region. 
+
+>> Each overlay have different configuration for each Region.
+
+
+>> Increases the number of available BIOs
+
+>> Device not in a region defined: Global Region 
+
+## Underlay WAN links to use for the Overlay
+
+* Primary
+  * Choose one or more primary networks
+  * Traffic sent unless blackout (link down) or brownout (performance threshold)
+
+* Backup
+  * Used in case of blackout/brownout
+  * Choose one or more networks
+
+
+### Cross connect groups
+Add each interface label to a cross connect group.
+
+Orchestrator will only attempt to build cross connect tunnels with interfaces **in the same Cross Connect Group**.
+
+Configurable per BIO. 
+
+### Secondary Connections
+Failover between primary and Backup. 
+
+Backups will only be used if Secondaries also fail. 
+
+### SLO: Service Level Objective
+| SLO | Description |
+| ----- | ----- | 
+| Loss | Packets don't reach their destination (pre-FEC) |
+| Latency | ms does it take a packet to arrive | 
+| Jitter | Packet-to-Packet timing arrival variation | 
+
+
+Values are OR: only **ONE** need to exceed. 
+
+Two primary ➡ One marked down if exceeds the thresholds.
+
+## Link Bonding and Failover
+Resiliency against WAN Link failure.
+
+![Link Bonding](img/SilverPeak_linkbonding.png)
+
+Logically bonded. 
+
+### Link Bonding Policies
+| Policy | Tag | Description | 
+| ------ | ----------- | ---- |
+| High Availability | HA |  1:1 FEC ratio. Better than mirroring. Instantaneous failover. 2 best quality links will be in us at a time. |
+| High Quality | HQ | >80% BW efficiency on the actie link. 1:5 variable auto FEC. Best path. 100% for the best path and FEC on 2nd best path | 
+| High Throughput | HT | Load Balances between paths (round robin). Two active links for LB. Fills path with most BW avail. until BW is = 1:5 variable FEC. | 
+| High Effiency | HE | Similar to HT. No overhead from FEC. LB (round robin). Exposure to loss. Two active links for LB. Fills path based on % utilization: least % utilized first. | 
+| Custom | - | FEC wait Time. Path conditioning. Link selection | 
+
+![Link Bonding Policies](img/SilverPeak_LinkBondingPolicies.png)
+
+### Different policy settings for hubs & spokes.
+Uncheck use branch settings: settings for the hub will be different. 
+
+
+## Firewall Zone 
+* Each BIO: Zone Based Firewall (ZBF)
+* Traffic moving between devices in the same zone: always permitted. 
+
+## Boost License
+Assumes ther is licensed Boost bandwidth available.
+
+## Peer Unavailable Option
+Case there is no destination overlay tunnel avilable. 
+
+* Use XXX
+* Use Best Route
+* Drop
+
+## QoS Settings
+* Which QoS traffic class will be placed in
+* Set DSCP settings for payload (LAN) and Tunnel (WAN)
+* All overaly traffic ➡ default global shaper 
+  
+
+## Application-Drive security policies for breakout 
+* First-packet IQ: granular Local Internt Breakout (direct to net)
+  * Trusted Business Apps
+  * Home from Work Apps
+  * Untrusted
+
+## Breakout traffic to Internet & Cloud Services
+* Link selection
+* Set policies and order
+* Internet reachability testing. 
+
+When to stop using a link and how to failover:
+* Waterfall
+* Balanced
+* Use Loss, Latency and Jitter.
+* Choose measurements. 
+
+## Overlay List Order = PRIORITYU
+Priority column determines the order of matching top ➡ down. 
+
+Top overlay = highest priority. 
+
+BIO configuration causes the Orchestrator to create Route Policies on appliances.
+
+Optimization and QoS policies are also created. 
