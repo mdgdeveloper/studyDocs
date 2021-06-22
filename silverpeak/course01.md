@@ -400,3 +400,265 @@ Top overlay = highest priority.
 BIO configuration causes the Orchestrator to create Route Policies on appliances.
 
 Optimization and QoS policies are also created. 
+
+
+# Automated provisioning and configuration
+## Zero Touch Provisioning (ZTP) > plug & play.
+* Device gets IP/DNS via DHCP.
+* Device registers itself with Cloud Portal: Pending Approval status
+*  Connects to Orchestrator and checks SN. 
+*  Admin approves registration in Orch. and added to a group. 
+
+## EC - New Virtual Device Registration 
+* Configure new VD: Provide account name + Account Key 
+* Virtual Dev registers itself with Portal 
+* Portal contacts Orch. and provides IP + SN
+* Admin approves 
+
+## Preconfiguration of Appliances
+### ZTC: Zero Touch Configuration
+* Create preconfig
+* Set-up auto-approval & config
+* Work with ZTP or VMs
+* Use YAML files 
+
+# Virtual Router Redundancy Protocol (VRRP)
+* Redundant Gateway functionalty
+  * L2 protocol. 
+  * Automatic assignment of available IP routers to participating hosts. 
+* Operates with a single subnet
+
+## VRRP Use Cases
+* Edge HA
+* Traditional HA
+
+Out-of-path One Silver Peak works with VRRP
+
+Useful with two SP devices share a Virtual IP address.
+
+## Hybrid Approach
+End devices and VRRP VIP in different subnets. 
+
+PBR redirects traffic to VIP 
+
+### Configuration
+* Configuration > VRRP 
+* Required
+  * Group ID
+  * Interface
+  * VIP 
+
+* Preemption 
+
+# Quality of Service (QoS)
+1. QoS Policy
+   1. Traffic class
+   2. DSCP
+2. Shaper
+   1. Behavior of individual traffic classes, priorities and limits. 
+
+## Max Bandwidth
+Limits appliance throughput and shaper BW allocation. 
+
+Set by admin. 
+
+## Deployment Profile
+Total Inbound and Outbound BW 
+
+## Traffic Class Management in the Shaper 
+Defined in the Shaper
+
+10 classes
+
+Classes ar prioritized: lower number > get BW first. 
+
+Sensitive traffic > High priority.
+
+## Shaper Operation Summary
+### Basic Rules
+* Priority order: give all calsses their guarantee (Min BW)
+* Data in any class & available BW > Weighted round-robin (Excess Weighting)
+
+---
+* Max WAN BW
+* No class can exceeds its Max BW
+* No flow can exceed the Rate Limit for its Traffic Class
+* Drop any packets which exceeds Max Wait Time in the queue. 
+
+## Trafic Class Minimums
+Must be set carefully. 
+
+Recommendation: Set MIN BW to 0 to use weighted priority. 
+
+
+## DSCP - TRUST/TRUST
+Use the same DSCP for internal/external 
+
+## DSCP - EF/TRUST-LAN
+LAN: EF
+
+WAN: TRUST-LAN 
+
+The tunnel uses the LAN DSCP to encapsulate the packet through the tunnel, putting EF DSCP for the encapsulated packet. 
+
+![Trust Lan](img/SilverPeak_DSCP_Trust_EF.png)
+
+## DSCP - TRUST / CS5
+LAN: Trust-LAN
+
+WAN: CS5
+
+The opposite behavior. The LAN remains with the same tag, but the Tunnel traffic is tagged as CS5.
+
+![CS5](img/SilverPeak_DSCP_Trust_CS5.png)
+
+**Note:** Security Policies are applied in the end, once the egress zone is determined. 
+
+# Backup, Restore, Image Management
+Maintenance > Backup Appliances
+
+
+* Appliances configurations are backed up to the Orchestrator database
+* Orchestrator configuration and database are backed up to another server. 
+
+
+>> Backups can be scheduled to occur on a regular basis. 
+
+
+* Orchestrator Restore: using CLI 
+* Appliance Restore: Once at a time. 
+* RMA Wizard 
+
+# Monitoring your Network 
+## Health Map
+Hourly graphic view of state of Loss, Latency, Jitter & Alarms per appliance.
+
+Each box: 1 hour.
+
+## Network View on Appliance
+* BW usage
+* Top Apps
+* Latency
+* Loss
+* Top Flows
+
+----
+Selectable:
+* Traffic Type
+* Direction
+* Time Period
+* Tunnel 
+
+### Inbound Traffic
+Comes FROM the WAN
+
+### Outbound Traffic
+Goes towards the WAN
+
+![LAN and WAN](img/SilverPeak_Inbound_Outbound.png)
+
+## Flow Monitoring
+Current flows in real time. 
+
+Flow Table: Flow Details > Flow Statistics. 
+
+## Bandwidth 
+BW usage
+
+LAN/WAN/Ratio
+
+Ratio between LAN and WAN: reduction ratio. 
+
+## LOSS
+Packet loss. 
+
+* PRE-FEC-Loss: Actual Loss
+* POST-FEC-Loss: Effective Loss. 
+
+## Charts
+Selectable time period up to 30 days. 
+
+## Realtime Charts 
+Three second intervals. 
+
+## Appliance Charting from Orchestrator 
+Support > [Reporting] Appliance Charts
+
+## Configuring Reports - Orchestrator
+Define custom reports on Reports tab
+
+# Logging 
+## Orchestrator Specific
+* Audit Logs
+* Orchestrator Debug
+
+## Appliance specific 
+* Event Logging
+* Alarm/Alert Logging
+* Audit Logging
+* Node
+
+## Alarm Alerting
+Emails
+
+## Netflow/IPFIX
+Is supported by Orchestrator.
+
+Configured on the Orchestrator as a Template. 
+
+Flow export. 
+
+## Syslog
+Appliance events sent directly to a logging servers. 
+
+# Troubleshooting 
+SilverPeak TAC
+
+**Support > Technical Support** 
+
+Genmerate Sys Dump
+
+Generate Show Tech 
+
+Directly upload files to Support. 
+
+## Diagnostic Tools
+### Ping and Traceroute 
+Sent from mgmt0
+
+```
+ping -I <src addr> <dest addr>
+ping -I <interface> <dest addr>
+```
+
+```
+traceroute -s <source_address>
+traceroute -i <interface>
+```
+
+### Iperf
+Available in Orchestrator 
+
+* Testing max throughput, jitter, latency
+* Execute from the Orchestrator
+  * Select 2 appliances
+  * Link Integrity Test
+* Can be executed from Appliance CLI (setup on eaech end)
+* Do not unintentionally send it through the tunnel.
+
+**Note:** All the BW is used. 
+
+### Built in Packet Capture
+Export and use in Wireshark, etc. 
+
+Filtering
+
+### CLI: show system capabilities
+
+## Data Flow Summary 
+![Data Flow](img/SilverPeak_DataFlow.png)
+
+## Boost and Asymmetry 
+Traffic is bidirectional: inbound and outbound. 
+
+
