@@ -661,4 +661,140 @@ Filtering
 ## Boost and Asymmetry 
 Traffic is bidirectional: inbound and outbound. 
 
+### TCP Asymmetry
+Asymmetric flows cannot be proxied.
+
+No proxy, no Boost from TCP acceleration. 
+
+Diagnosis: Redirection misconfiguration: One of the sides has 0 bytes. 
+
+Flow direction: 
+Resolves issues where flows pass through two different appliances. 
+
+### Boost Caveat
+Optimization policy matches all traffic ➡ Boost License is less than MAX WAN BW: Overall throughput will be limited to Boost. 
+
+**Solution**: Policies to boost only *desired* traffic. 
+
+Review flow details with the Flow Details Table.
+
+One important part to revciew is the one that covers the security ZBF to evaluate its impact on the flows.
+
+## Overlays and Tunnel Orchestration
+Overlay Manager: mantains configuration.
+
+Synchronices all appliances.
+Build Tunnels
+Applies Other Configuration. 
+
+## Tunnel Formation
+What to check:
+* Labels
+  * Interface Labels
+* Overlays
+  * Interface labels selected in Overlay for Primary / Backup
+* IP routing
+  * Next hop reachable
+  * Upstream routers know routes
+  * NAT upstream / flag
+
+## IPSEC UDP Tunnels
+* Tunnels must permit tunnel formation
+* IPsec ports
+
+## HA Links and Tunnels
+* LAN switch/hypervisor Vswitch config permit VLAN trunking
+* IPSEC_UDP tunnels: across HA link
+
+## Flows going in wrong tunnels/overlays
+* Flow matching 
+* Overlays in correct order
+* Flows are going in underlay tunnels
+  * No match for a overlay.
+* Flows are going PT instead of a tunnel. 
+  * Peer Unavailble action?
+  * Check routes table
+  * Policy
+
+## Licensing 
+Edge Connect Registration process:
+![Edge Connect Registration Process](img/SilverPeak_EdgeConnect_Registration.png)
+
+Allow Cloud Portal traffic to:
+* cloudportal.silver-peak.com
+* portal.silverpeak.cloud
+
+🟩 All communications use **port 443**.
+
+### Orchestrator registration
+Check:
+* HTTPS (443)
+* WebSocket 
+* Configure proxy if needed.
+* DNS
+
+
+### Portal & License Monitoring Summary
+Available on the Appliance. Information of the Licensing. 
+
+### Reachability Status
+Administration ➡ Reachability Status
+
+### Orchestrator - Appliances Quick Test
+
+### Orchestartor - EdgeConnect Connectivity
+* mgmt0 has to get to Orchestrator
+* ping/traceroute 
+* Bridge MUST have mgmt0 access
+
+### Managing EdgeConnect Licenses
+Configuration ➡ Licenses 
+
+### Reclaiming an EdgeConnecte Licenses
+* Can delete the appliance from Orchestartor
+* Configuration ➡ Licenses tab : Revoke Licenses
+
+### Boost Licensing
+Requires to be licensed in BOTH sides to work. 
+
+### Flow DROPS due to no or Expired License
+
+## Routing and Reachability
+### EC WAN hardening
+If an interface is WAN hardened:
+* Allowed
+  * IPsec tunnel traffic
+  * Cloud portal traffic
+    * Does not impact licensing
+  * DHCP
+  * DNS
+
+* The rest is DROPPED.
+
+To see if WAN hardening is related: turn it off. 
+
+### Interface & Cabling Consistency
+* Bridge Mode in bypass ➡ cross-over connection.
+* CDP for SilverPeak
+  * Default is DISABLED
+  
+Troubleshoot:
+```
+# show cdp
+```
+### Redirection or Attracting Fails out of Path
+* Routers learning routes from SP
+* BGP Established
+* OSPF in FULL State
+* PBR / WCCP 
+  * ACL properly configured (wild card mask)
+* VRRP
+  * Master check
+
+
+### Network Routing IUssues
+* Default route advertised
+* Routed subnets not directly connected
+* BGP/OSPF Learned
+
 
