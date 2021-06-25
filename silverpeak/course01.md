@@ -1,6 +1,6 @@
 # Silver Peak Course: Deploying SDWAN Technologies - DST  
 
-![Logo](/img/logo.png)
+![Logo](img/logo.png)
 
 # Business Intent Overlays
 Two types of tunnels to route the data:
@@ -792,7 +792,7 @@ Troubleshoot:
   * Master check
 
 
-### Network Routing IUssues
+### Network Routing Issues
 * Default route advertised
 * Routed subnets not directly connected
 * BGP/OSPF Learned
